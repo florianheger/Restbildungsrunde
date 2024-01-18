@@ -4,7 +4,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        Frontend Part or Codewars-REST project
+        Fronted Part of Codewars-REST project
       </header>
     </div>
   );
