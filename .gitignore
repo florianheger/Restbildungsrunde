@@ -1,0 +1,2 @@
+# da ich in VS Code schreibe, wurde eine Datei ".vscode" hinzugefügt damit er java.compile.nullAnalysis.mode "disablen" kann, was nicht in ganzem projekt benötigt ist
+.vscode
