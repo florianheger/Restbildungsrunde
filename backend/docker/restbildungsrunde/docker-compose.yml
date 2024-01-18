@@ -1,0 +1,15 @@
+networks:
+  net:
+
+services:
+  db:
+    image: postgres
+    container_name: restbildungsrunde-db
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "SomeRandomPassword"
+      POSTGRES_DB: "test"
+    ports:
+      - "5432:5432"
+    networks:
+      - net
