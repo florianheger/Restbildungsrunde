@@ -22,7 +22,11 @@ public class UserController {
     @PostMapping("/user")
     public void createUser(@RequestBody User user) {
         ModelMapper modelMapper = new ModelMapper();
-        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
         userRepository.save(modelMapper.map(user, UserEntity.class));
+    }
+
+    @DeleteMapping("/user")
+    public void deleteUser(@RequestParam long id) {
+        userRepository.deleteById((int)id);
     }
 }
