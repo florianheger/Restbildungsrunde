@@ -20,4 +20,6 @@ public class UserEntity {
     Long id;
 
     String username;
+
+    int points;
 }

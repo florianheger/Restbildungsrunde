@@ -7,17 +7,13 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class UserController {
     private final UserRepository userRepository;
-
-    @GetMapping("/hello")
-    public String hello() {
-
-        return "Hello World!";
-    }
 
     @PostMapping("/user")
     public void createUser(@RequestBody User user) {
@@ -28,5 +24,15 @@ public class UserController {
     @DeleteMapping("/user")
     public void deleteUser(@RequestParam long id) {
         userRepository.deleteById((int)id);
+    }
+
+    @PutMapping("/user/updatePoints")
+    public void updatePoints(@RequestParam long id, @RequestParam int points) {
+        Optional<UserEntity> userEntityOptional = userRepository.findById((int)id);
+        if (userEntityOptional.isPresent()) {
+            UserEntity userEntity = userEntityOptional.get();
+            userEntity.setPoints(points);
+            userRepository.save(userEntity);
+        }
     }
 }
