@@ -56,4 +56,21 @@ class UserControllerTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    public void updatePoints_ShouldUpdatePoints() {
+        UserEntity newUser = new UserEntity();
+        newUser.setUsername("Tom Testermann");
+        newUser.setPoints(5);
+        int expectedPoints = 10;
+
+        long id = userRepository.save(newUser).getId();
+
+        restTemplate.put("/api/user/updatePoints?id=" + id + "&points=" + expectedPoints, Void.class);
+
+        Optional<UserEntity> newUserInDb = userRepository.findById((int)id);
+
+        assertTrue(newUserInDb.isPresent());
+        assertThat(newUserInDb.get().getPoints()).isEqualTo(expectedPoints);
+    }
 }

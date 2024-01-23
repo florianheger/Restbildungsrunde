@@ -5,6 +5,8 @@ import com.ausbildungsrunde.restbildungsrunde.model.UserEntity;
 import com.ausbildungsrunde.restbildungsrunde.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,13 +35,16 @@ public class UserController {
     }
 
     @PutMapping("/user/updatePoints")
-    public void updatePoints(@RequestParam long id, @RequestParam int points) {
+    public ResponseEntity<URI> updatePoints(@RequestParam long id, @RequestParam int points, UriComponentsBuilder ucb) {
         Optional<UserEntity> userEntityOptional = userRepository.findById((int)id);
         if (userEntityOptional.isPresent()) {
             UserEntity userEntity = userEntityOptional.get();
             userEntity.setPoints(points);
             userRepository.save(userEntity);
+            URI locationOfUser = ucb.path("api/user/{id}").buildAndExpand(userEntity.getId()).toUri();
+            return new ResponseEntity<>(locationOfUser, HttpStatus.OK);
         }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/user/{id}")
