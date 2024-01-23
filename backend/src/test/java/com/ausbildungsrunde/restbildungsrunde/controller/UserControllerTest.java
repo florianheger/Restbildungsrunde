@@ -73,4 +73,27 @@ class UserControllerTest {
         assertTrue(newUserInDb.isPresent());
         assertThat(newUserInDb.get().getPoints()).isEqualTo(expectedPoints);
     }
+
+    @Test
+    public void getUser_WhenUserExists_ShouldReturnUser() {
+        UserEntity newUser = new UserEntity();
+        newUser.setUsername("Tom Testermann");
+        newUser.setPoints(5);
+
+        long id = userRepository.save(newUser).getId();
+
+        ResponseEntity<UserEntity> receivedUser = restTemplate.getForEntity("/api/user/" + id, UserEntity.class);
+
+        assertThat(receivedUser.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(receivedUser.getBody().getUsername()).isEqualTo(newUser.getUsername());
+        assertThat(receivedUser.getBody().getPoints()).isEqualTo(newUser.getPoints());
+        assertThat(receivedUser.getBody().getId()).isEqualTo(id);
+    }
+
+    @Test
+    public void getUser_WhenUserDoesNotExist_ShouldReturnNoUser() {
+        ResponseEntity<UserEntity> receivedUser = restTemplate.getForEntity("/api/user/" + -1, UserEntity.class);
+
+        assertThat(receivedUser.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }
