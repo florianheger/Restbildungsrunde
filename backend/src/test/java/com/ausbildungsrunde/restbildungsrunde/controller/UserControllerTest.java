@@ -66,7 +66,7 @@ class UserControllerTest {
 
         long id = userRepository.save(newUser).getId();
 
-        restTemplate.put("/api/user/updatePoints?id=" + id + "&points=" + expectedPoints, Void.class);
+        restTemplate.put("/api/user/updatePoints/" + id + "/" + expectedPoints, URI.class);
 
         Optional<UserEntity> newUserInDb = userRepository.findById((int)id);
 

@@ -34,8 +34,8 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/user/updatePoints")
-    public ResponseEntity<URI> updatePoints(@RequestParam long id, @RequestParam int points, UriComponentsBuilder ucb) {
+    @PutMapping("/user/updatePoints/{id}/{points}")
+    public ResponseEntity<URI> updatePoints(@PathVariable long id, @PathVariable int points, UriComponentsBuilder ucb) {
         Optional<UserEntity> userEntityOptional = userRepository.findById((int)id);
         if (userEntityOptional.isPresent()) {
             UserEntity userEntity = userEntityOptional.get();
