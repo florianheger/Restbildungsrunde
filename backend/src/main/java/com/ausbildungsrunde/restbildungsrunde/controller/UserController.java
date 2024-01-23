@@ -26,9 +26,10 @@ public class UserController {
         return ResponseEntity.created(locationOfUser).build();
     }
 
-    @DeleteMapping("/user")
-    public void deleteUser(@RequestParam long id) {
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
         userRepository.deleteById((int)id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/user/updatePoints")
