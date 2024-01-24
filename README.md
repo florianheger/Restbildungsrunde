@@ -1,3 +1,22 @@
+# Aufgabe:
+Codewars als Rest-Anwendung
+- REST-Anwendung (Wenn es in eurer Programmiersprache nicht zu 100% mit REST-"Standard" übereinstimmt, dann nehmt die Branchenübliche Lösung)
+- TDD (Unit-Tests)
+- Muss nicht persistente Daten enthalten
+- Sprache egal
+
+TODOs:
+- Highscore Liste ausgeben
+- ~~Aufgaben hinzufügen~~
+- ~~Aufgaben editieren~~
+- ~~Aufgaben abrufen~~
+- Ergebnis eintragen, Punkte bekommen
+- Nutzerverwaltung
+- ~~Nutzer hinzufügen~~
+- ~~Nutzer löschen~~
+- ~~Nutzer Punkte addieren~~
+
+
 # Einrichtung Backend:
 
 ## Voraussetzungen:
