@@ -5,7 +5,9 @@ Codewars als Rest-Anwendung
 - Muss nicht persistente Daten enthalten
 - Sprache egal
 
-TODOs:
+# Backend:
+
+## TODOs:
 - Highscore Liste ausgeben
 - ~~Aufgaben hinzufügen~~
 - ~~Aufgaben editieren~~
@@ -15,9 +17,6 @@ TODOs:
 - ~~Nutzer hinzufügen~~
 - ~~Nutzer löschen~~
 - ~~Nutzer Punkte addieren~~
-
-
-# Einrichtung Backend:
 
 ## Voraussetzungen:
 - Java 17
@@ -30,7 +29,7 @@ Docker starten
 Im Terminal im backend Folder folgenden Befehl eingeben:
 
 ```
-docker-compose up -d --force-recreate --no-deps --build
+docker-compose -p restbildungsrunde up -d --force-recreate --no-deps --build
 ```
 
 Damit sollte ein Container namens "backend" laufen. Dieser beinhaltet die Datenbank und das Backend.
@@ -57,3 +56,6 @@ localhost:5432
 user: postgres
 password: SomeRandomPassword
 ```
+
+# Frontend:
+WIP
