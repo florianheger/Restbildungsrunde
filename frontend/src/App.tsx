@@ -1,11 +1,13 @@
+import { Route, Routes } from 'react-router-dom';
+import Users from './pages/Users/Users';
 
 
 function App() {
-  return (
-    <div>
-      Fronted Part of Codewars-REST project
-    </div>
-  );
+	return (
+		<Routes>
+      <Route path="/" element={<Users/>}/>
+		</Routes>
+	);
 }
 
 export default App;

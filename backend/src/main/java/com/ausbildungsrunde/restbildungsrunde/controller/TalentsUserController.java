@@ -57,6 +57,7 @@ public class TalentsUserController {
     }
 
     @GetMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     private ResponseEntity<List<TalentsUser>> getAllUsers(Pageable pageable) {
         Page<TalentsUser> page = talentsUserRepository.findAll(
                 PageRequest.of(
