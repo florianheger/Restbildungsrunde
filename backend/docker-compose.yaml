@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    container_name: restbildungsrunde-db
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "SomeRandomPassword"
+      POSTGRES_DB: "restbildungsrunde"
+    ports:
+      - "5432:5432"
+
+  spring:
+    container_name: restbildungsrunde-be
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://restbildungsrunde-db:5432/restbildungsrunde
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=SomeRandomPassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+    depends_on:
+      - db

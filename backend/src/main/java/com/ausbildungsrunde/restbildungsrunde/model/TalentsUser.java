@@ -1,6 +1,5 @@
 package com.ausbildungsrunde.restbildungsrunde.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
-
+public class TalentsUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
