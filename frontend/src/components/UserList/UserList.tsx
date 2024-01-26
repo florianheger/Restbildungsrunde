@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { userAvatarURL } from '../../constants/userAvatarURL';
 import {
-	UserPlaceInfoWrapper,
+	Name,
+	Points,
+	RightPartWrapper,
+	UserAvatar,
 	UserAvatarNameWrapper,
 	UserAvatarWrapper,
-	UserAvatar,
+	UserPlaceInfoWrapper,
 } from './UserList.styled';
-import { userAvatar } from '../../constants/userAvatarURL';
 
 function UsersList() {
 	const [users, setUsers] = useState([]);
@@ -21,20 +24,35 @@ function UsersList() {
 	}, []);
 
 	return (
-		<ul>
-			{users.map(({ username, points, id }, idx) => (
-				<UserPlaceInfoWrapper key={id}>
+		<>
+			<ul>
+				{users.slice(0, 6).map(({ username, points, id }, idx) => (
+					<UserPlaceInfoWrapper key={id}>
 						<p>{`\u0023${idx + 1}`}</p>
-						<UserAvatarNameWrapper>
-							<UserAvatarWrapper>
-								<UserAvatar src={userAvatar} alt='user avatar' width={23} />
-							</UserAvatarWrapper>
-							<p>{username}</p>
-						</UserAvatarNameWrapper>
-					<p>{points}</p>
-				</UserPlaceInfoWrapper>
-			))}
-		</ul>
+						<RightPartWrapper>
+							<UserAvatarNameWrapper>
+								<UserAvatarWrapper>
+									<UserAvatar src={userAvatarURL} alt='user avatar' />
+								</UserAvatarWrapper>
+								<Name>{username}</Name>
+							</UserAvatarNameWrapper>
+							<Points>{points}</Points>
+						</RightPartWrapper>
+					</UserPlaceInfoWrapper>
+				))}
+			</ul>
+
+			{users.length > 6 && (
+				//todo edn this shit
+				<ul>
+					{users.slice(6).map(({ username, points, id }, idx) => (
+						<li key={id}>
+							{username}, {points}
+						</li>
+					))}
+				</ul>
+			)}
+		</>
 	);
 }
 export default UsersList;

@@ -1,2 +1,2 @@
-export const userAvatar =
+export const userAvatarURL =
 	'https://imgs.search.brave.com/XyK-nD1JwFj6w969oqDy0PG9v3OHGCXcN_YBLPjcQLw/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzQzMzU2NDYzL3Iv/aWwvMzhkMzViLzQ5/NTU1ODE5NjcvaWxf/NjAweDYwMC40OTU1/NTgxOTY3XzE3em4u/anBn';
