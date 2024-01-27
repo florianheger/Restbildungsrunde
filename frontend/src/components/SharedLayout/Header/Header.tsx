@@ -1,5 +1,6 @@
 import { userAvatarURL } from '../../../constants/userAvatarURL';
-import { UserAvatar, UserAvatarWrapper } from '../../UserList/UserList.styled';
+import { UserAvatar, UserAvatarWrapper } from '../../Lists/BigUsersList/BigUsersList.styled';
+
 import Container from '../Container/Container';
 import {
 	HeaderElementsWrapper, HeaderTitle,StylizedHeader
