@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import BigUsersList from '../Lists/BigUsersList/BigUsersList';
 import MiniUsersList from '../Lists/MiniUsersLIst/MiniUsersList';
-import { ListsWrapper, MiniUserListWrapper } from './UserList.styled';
+import {
+	DefaultText,
+	DefaultTextWrapper,
+	ListsWrapper,
+	MiniUserListWrapper,
+} from './UserList.styled';
 
 function UsersList() {
 	const [users, setUsers] = useState([]);
@@ -18,9 +23,11 @@ function UsersList() {
 
 	if (users.length === 0) {
 		return (
-			<div>
-				<p>Nobody was found, please add some users to the backend</p>
-			</div>
+			<DefaultTextWrapper>
+				<DefaultText>
+					Nobody was found, please add some users to the backend
+				</DefaultText>
+			</DefaultTextWrapper>
 		);
 	}
 
