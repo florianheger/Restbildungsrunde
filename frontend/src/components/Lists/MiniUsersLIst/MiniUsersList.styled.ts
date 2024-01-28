@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const MiniUsersListDataWrapper = styled.ul`
 	padding: 17px 15px;
 	width: 380px;
+	height: 100%;
 	border-radius: 12px;
 	background: #1d1d1d;
 `;
@@ -49,8 +50,15 @@ export const MiniUserAvatar = styled.img`
 	height: auto;
 `;
 
-export const Place = styled.p``;
+export const Place = styled.p`
+	font-size: 20px;
+`;
 
-export const Name = styled.p``;
+export const Name = styled.p`
+	font-size: 16px;
+	text-decoration-line: underline;
+`;
 
-export const Points = styled.p``;
+export const Points = styled.p`
+	font-size: 20px;
+`;

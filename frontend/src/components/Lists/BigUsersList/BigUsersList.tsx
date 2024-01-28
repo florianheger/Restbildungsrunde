@@ -1,5 +1,5 @@
 import { userAvatarURL } from '../../../constants/userAvatarURL';
-import { Name, Points, RightPartWrapper, UserAvatar, UserAvatarNameWrapper, UserAvatarWrapper, UserInfoWrapper, UserPlaceInfoWrapper } from './BigUsersList.styled';
+import { Name, RightPartWrapper, UserAvatar, UserAvatarNameWrapper, UserAvatarWrapper, UserInfoWrapper, UserPlaceInfoWrapper } from './BigUsersList.styled';
 import { UsersListProps } from '../UsersList.types';
 
 function BigUsersList({arrData}: UsersListProps) {
@@ -15,7 +15,7 @@ function BigUsersList({arrData}: UsersListProps) {
 							</UserAvatarWrapper>
 							<Name>{username}</Name>
 						</UserAvatarNameWrapper>
-						<Points>{points}</Points>
+						<p>{points}</p>
 					</RightPartWrapper>
 				</UserPlaceInfoWrapper>
 			))}

@@ -48,9 +48,5 @@ export const UserAvatar = styled.img`
 
 export const Name = styled.p`
 	text-decoration-line: underline;
-	text-transform: capitalize;
 `;
 
-export const Points = styled.p`
-	text-transform: capitalize;
-`;

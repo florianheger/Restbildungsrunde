@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BigUsersList from '../Lists/BigUsersList/BigUsersList';
 import MiniUsersList from '../Lists/MiniUsersLIst/MiniUsersList';
-import { ListsWrapper } from './UserList.styled';
+import { ListsWrapper, MiniUserListWrapper } from './UserList.styled';
 
 function UsersList() {
 	const [users, setUsers] = useState([]);
@@ -19,20 +19,19 @@ function UsersList() {
 	if (users.length === 0) {
 		return (
 			<div>
-				<p>Nobody was found, please add some user to backend</p>
+				<p>Nobody was found, please add some users to the backend</p>
 			</div>
 		);
 	}
 
 	return (
 		<ListsWrapper>
-			<div>
-				<BigUsersList arrData={users.slice(0, 6)} />
-			</div>
+			<BigUsersList arrData={users.slice(0, 6)} />
+
 			{users.length > 6 && (
-				<div>
+				<MiniUserListWrapper>
 					<MiniUsersList arrData={users.slice(6)} />
-				</div>
+				</MiniUserListWrapper>
 			)}
 		</ListsWrapper>
 	);
