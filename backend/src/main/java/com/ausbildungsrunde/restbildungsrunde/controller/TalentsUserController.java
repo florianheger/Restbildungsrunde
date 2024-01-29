@@ -18,6 +18,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TalentsUserController {
     private final TalentsUserRepository talentsUserRepository;
 
@@ -50,10 +51,7 @@ public class TalentsUserController {
     @GetMapping("/{id}")
     public ResponseEntity<TalentsUser> getUser(@PathVariable long id) {
         Optional<TalentsUser> user = talentsUserRepository.findById((int)id);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
-        }
-        return ResponseEntity.notFound().build();
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
