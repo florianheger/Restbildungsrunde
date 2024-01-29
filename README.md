@@ -17,6 +17,9 @@ Codewars als Rest-Anwendung
 - ~~Nutzer hinzufügen~~
 - ~~Nutzer löschen~~
 - ~~Nutzer Punkte addieren~~
+- Put Mapping anpassen
+- Spring Security Principal einführen
+- ~~Swagger einbinden~~
 
 ## Voraussetzungen:
 - Java 17
@@ -33,6 +36,14 @@ docker-compose -p restbildungsrunde up -d --force-recreate --no-deps --build
 ```
 
 Damit sollte ein Container namens "backend" laufen. Dieser beinhaltet die Datenbank und das Backend.
+
+## Swagger / Openapi:
+Swagger/Openapi sind nach dem Starten unter folgenden Adressen erreichbar:
+
+Swagger : ```localhost:8080/swagger```
+
+Openapi : ```localhost:8080/openapi```
+
 
 ## Schnittstellen:
 
@@ -56,6 +67,9 @@ localhost:5432
 user: postgres
 password: SomeRandomPassword
 ```
+
+
+
 
 # Frontend:
 WIP

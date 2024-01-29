@@ -38,6 +38,7 @@ public class ExerciseController {
         return ResponseEntity.ok().build();
     }
 
+    //TODO: Jetzt müsste man noch den Author mitgeben. Das macht eigentlich keinen Sinn.
     @PutMapping("/{id}")
     public ResponseEntity<URI> updateExercise(@RequestBody Exercise exercise, @PathVariable long id) {
         Optional<Exercise> exerciseOptional = exerciseRepository.findById((int)id);
