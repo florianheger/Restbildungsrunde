@@ -1,12 +1,10 @@
 package com.ausbildungsrunde.restbildungsrunde.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @Table
@@ -30,7 +28,8 @@ public class Exercise {
 
     String category;
 
-    String author;
+    @ManyToOne
+    TalentsUser author;
 
     int points;
 

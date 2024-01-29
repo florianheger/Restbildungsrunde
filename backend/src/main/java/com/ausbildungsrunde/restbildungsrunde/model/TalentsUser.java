@@ -1,17 +1,20 @@
 package com.ausbildungsrunde.restbildungsrunde.model;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import java.util.List;
+
+
+@Getter
+@Setter
 @Builder
 @Entity
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class TalentsUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,4 +23,7 @@ public class TalentsUser {
     String username;
 
     int points;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Exercise> exercises;
 }

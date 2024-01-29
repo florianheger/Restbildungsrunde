@@ -2,6 +2,7 @@ package com.ausbildungsrunde.restbildungsrunde.controller;
 
 import com.ausbildungsrunde.restbildungsrunde.model.Exercise;
 import com.ausbildungsrunde.restbildungsrunde.repository.ExerciseRepository;
+import com.ausbildungsrunde.restbildungsrunde.repository.TalentsUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,11 @@ import java.util.Optional;
 @RequestMapping("/api/exercise")
 public class ExerciseController {
     private final ExerciseRepository exerciseRepository;
+    private final TalentsUserRepository talentsUserRepository;
 
-    @PostMapping
-    public ResponseEntity<Void> createExercise(@RequestBody Exercise exercise, UriComponentsBuilder ucb) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<Void> createExercise(@RequestBody Exercise exercise, @PathVariable int userId, UriComponentsBuilder ucb) {
+        talentsUserRepository.findById(userId).ifPresent(exercise::setAuthor);
         Exercise newExercise = exerciseRepository.save(exercise);
         URI locationOfExercise = ucb.path("api/exercise/{id}").buildAndExpand(newExercise.getId()).toUri();
         return ResponseEntity.created(locationOfExercise).build();
@@ -26,10 +29,7 @@ public class ExerciseController {
     @GetMapping("/{id}")
     public ResponseEntity<Exercise> getExercise(@PathVariable long id) {
         Optional<Exercise> exercise = exerciseRepository.findById((int)id);
-        if (exercise.isPresent()) {
-            return ResponseEntity.ok(exercise.get());
-        }
-        return ResponseEntity.notFound().build();
+        return exercise.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
