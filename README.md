@@ -68,8 +68,11 @@ user: postgres
 password: SomeRandomPassword
 ```
 
-
-
-
 # Frontend:
-WIP
+
+- Seite "exercises" für Ausgabe aller Aufgaben + Möglichkeit Ergebnis einzutragen einrichten
+- Seite "highscore" für Ausgabe der Highscore Liste einrichten
+- Seite "login" für Login einrichten
+- Seite "register" für Registrierung einrichten
+- Seite "user" für Userverwaltung einrichten
+- Seite zum Hinzufügen von Aufgaben einrichten
