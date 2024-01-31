@@ -6,7 +6,6 @@ import com.ausbildungsrunde.restbildungsrunde.repository.TalentsUserRepository;
 import com.ausbildungsrunde.restbildungsrunde.security.service.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -40,8 +39,13 @@ public class ExerciseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExercise(@PathVariable long id) {
-        exerciseRepository.deleteById((int)id);
-        return ResponseEntity.ok().build();
+        Optional<Exercise> exerciseOptional = exerciseRepository.findById((int)id);
+        Long userId = getID();
+        if (exerciseOptional.isPresent() && Objects.equals(exerciseOptional.get().getAuthor().getId(), userId)) {
+            exerciseRepository.deleteById((int)id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")

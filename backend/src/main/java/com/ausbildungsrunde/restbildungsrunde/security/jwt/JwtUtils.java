@@ -4,8 +4,6 @@ import com.ausbildungsrunde.restbildungsrunde.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.security.PublicKey;
 import java.util.Date;
 
 import jakarta.servlet.http.Cookie;

@@ -38,7 +38,7 @@ class ExerciseControllerTest {
     @DirtiesContext
     void createExercise_ShouldCreateExercise() {
         Exercise newExercise = buildTestExercise();
-        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie("Tom Testermann", "test");
 
         ResponseEntity<Void> response = createExerciseWithHeader(cookieHeader, newExercise);
 
@@ -60,7 +60,7 @@ class ExerciseControllerTest {
     @DirtiesContext
     void deleteExercise_ShouldDeleteExercise() {
         Exercise newExercise = buildTestExercise();
-        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie("Tom Testermann", "test");
 
         ResponseEntity<Void> createResponse = createExerciseWithHeader(cookieHeader, newExercise);
         ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(createResponse.getHeaders().getLocation(), cookieHeader);
@@ -79,7 +79,7 @@ class ExerciseControllerTest {
     @DirtiesContext
     void updateExercise_ShouldUpdateExercise() {
         Exercise newExercise = buildTestExercise();
-        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie("Tom Testermann", "test");
         ResponseEntity<Void> createResponse = createExerciseWithHeader(cookieHeader, newExercise);
         ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(createResponse.getHeaders().getLocation(), cookieHeader);
 
@@ -119,7 +119,7 @@ class ExerciseControllerTest {
     @DirtiesContext
     void getExercise_WhenExerciseExists_ShouldReturnExercise() {
         Exercise newExercise = buildTestExercise();
-        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie("Tom Testermann", "test");
         ResponseEntity<Void> createResponse = createExerciseWithHeader(cookieHeader, newExercise);
         ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(createResponse.getHeaders().getLocation(), cookieHeader);
 
@@ -137,7 +137,7 @@ class ExerciseControllerTest {
     @Test
     @DirtiesContext
     void getExercise_WhenExerciseDoesNotExist_ShouldReturnExercise() throws URISyntaxException {
-        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie("Tom Testermann", "test");
         ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(new URI("/api/exercise/-1"), cookieHeader);
 
         assertThat(getExerciseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -156,10 +156,12 @@ class ExerciseControllerTest {
                 .build();
     }
 
-    private HttpHeaders signUpLoginAndReturnCookie() {
-        restTemplate.postForEntity("/api/auth/signup", new SignupRequest("Tom Testermann", "test"), Void.class);
-        ResponseEntity<?> responsetest = restTemplate
-                .postForEntity("/api/auth/signin", new LoginRequest("Tom Testermann", "test"), Void.class);
+    private HttpHeaders signUpLoginAndReturnCookie(String username, String password) {
+        restTemplate.postForEntity("/api/user/signup",
+                new SignupRequest(username, password), Void.class);
+
+        ResponseEntity<?> responsetest = restTemplate.postForEntity("/api/user/signin",
+                new LoginRequest(username, password), Void.class);
 
         String cookie = responsetest.getHeaders().getFirst("Set-Cookie");
 
