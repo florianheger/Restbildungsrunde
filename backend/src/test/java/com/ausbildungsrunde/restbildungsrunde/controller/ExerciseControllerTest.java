@@ -1,23 +1,27 @@
 package com.ausbildungsrunde.restbildungsrunde.controller;
 
 import com.ausbildungsrunde.restbildungsrunde.model.Exercise;
-import com.ausbildungsrunde.restbildungsrunde.model.TalentsUser;
+import com.ausbildungsrunde.restbildungsrunde.payload.request.LoginRequest;
+import com.ausbildungsrunde.restbildungsrunde.payload.request.SignupRequest;
 import com.ausbildungsrunde.restbildungsrunde.repository.ExerciseRepository;
-import com.ausbildungsrunde.restbildungsrunde.repository.TalentsUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpMethod.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -26,22 +30,24 @@ class ExerciseControllerTest {
     private ExerciseRepository exerciseRepository;
 
     @Autowired
-    private TalentsUserRepository talentsUserRepository;
-
-    @Autowired
     private TestRestTemplate restTemplate;
+
+    //TODO: Es fehlen noch Tests zwecks Abfrage, ob eine Aufgabe bspw nicht gelöscht wird, wenn ein User es versucht, der nicht der Author ist.
 
     @Test
     @DirtiesContext
     void createExercise_ShouldCreateExercise() {
         Exercise newExercise = buildTestExercise();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
 
-        ResponseEntity<Void> response = restTemplate.postForEntity("/api/exercise/" + newExercise.getAuthor().getId(), newExercise, Void.class);
-        ResponseEntity<Exercise> newExerciseEntity = restTemplate.getForEntity(response.getHeaders().getLocation(), Exercise.class);
+        ResponseEntity<Void> response = createExerciseWithHeader(cookieHeader, newExercise);
+
+        ResponseEntity<Exercise> newExerciseEntity = getExerciseWithLocation(response.getHeaders().getLocation(), cookieHeader);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(newExerciseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(newExerciseEntity.getBody().getAuthor().getId()).isEqualTo(newExercise.getAuthor().getId());
+        assertNotNull(newExerciseEntity.getBody());
+        assertThat(newExerciseEntity.getBody().getAuthor().getUsername()).isEqualTo("Tom Testermann");
         assertThat(newExerciseEntity.getBody().getTitle()).isEqualTo(newExercise.getTitle());
         assertThat(newExerciseEntity.getBody().getDescription()).isEqualTo(newExercise.getDescription());
         assertThat(newExerciseEntity.getBody().getPoints()).isEqualTo(newExercise.getPoints());
@@ -54,22 +60,35 @@ class ExerciseControllerTest {
     @DirtiesContext
     void deleteExercise_ShouldDeleteExercise() {
         Exercise newExercise = buildTestExercise();
-        long id = exerciseRepository.save(newExercise).getId();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
 
-        restTemplate.delete("/api/exercise/" + id);
+        ResponseEntity<Void> createResponse = createExerciseWithHeader(cookieHeader, newExercise);
+        ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(createResponse.getHeaders().getLocation(), cookieHeader);
 
-        assertFalse(exerciseRepository.existsById((int) id));
+        assertNotNull(getExerciseEntity.getBody());
+
+        restTemplate.exchange("/api/exercise/" + getExerciseEntity.getBody().getId(),
+                DELETE,
+                new HttpEntity<>(newExercise, cookieHeader),
+                Void.class);
+
+        assertFalse(exerciseRepository.existsById(getExerciseEntity.getBody().getId().intValue()));
     }
 
     @Test
     @DirtiesContext
     void updateExercise_ShouldUpdateExercise() {
         Exercise newExercise = buildTestExercise();
-        long id = exerciseRepository.save(newExercise).getId();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        ResponseEntity<Void> createResponse = createExerciseWithHeader(cookieHeader, newExercise);
+        ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(createResponse.getHeaders().getLocation(), cookieHeader);
+
+        assertNotNull(getExerciseEntity.getBody());
+        Long id = getExerciseEntity.getBody().getId();
 
         Exercise updatedExercise = Exercise.builder()
                 .id(id)
-                .author(newExercise.getAuthor())
+                .author(getExerciseEntity.getBody().getAuthor())
                 .title("Test")
                 .description("This is a new test description")
                 .points(20)
@@ -79,12 +98,15 @@ class ExerciseControllerTest {
                 .language("Java")
                 .build();
 
-        restTemplate.put("/api/exercise/" + id, updatedExercise);
+        restTemplate.exchange("/api/exercise/" + getExerciseEntity.getBody().getId(),
+                PUT,
+                new HttpEntity<>(updatedExercise, cookieHeader),
+                Void.class);
 
-        Optional<Exercise> result = exerciseRepository.findById((int) id);
+        Optional<Exercise> result = exerciseRepository.findById(id.intValue());
 
         assertTrue(result.isPresent());
-        assertThat(result.get().getAuthor().getId()).isEqualTo(updatedExercise.getAuthor().getId());
+        assertThat(result.get().getAuthor().getUsername()).isEqualTo("Tom Testermann");
         assertThat(result.get().getTitle()).isEqualTo(updatedExercise.getTitle());
         assertThat(result.get().getDescription()).isEqualTo(updatedExercise.getDescription());
         assertThat(result.get().getPoints()).isEqualTo(updatedExercise.getPoints());
@@ -97,40 +119,33 @@ class ExerciseControllerTest {
     @DirtiesContext
     void getExercise_WhenExerciseExists_ShouldReturnExercise() {
         Exercise newExercise = buildTestExercise();
-        long id = exerciseRepository.save(newExercise).getId();
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        ResponseEntity<Void> createResponse = createExerciseWithHeader(cookieHeader, newExercise);
+        ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(createResponse.getHeaders().getLocation(), cookieHeader);
 
-        ResponseEntity<Exercise> response = restTemplate.getForEntity("/api/exercise/" + id, Exercise.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getAuthor().getId()).isEqualTo(newExercise.getAuthor().getId());
-        assertThat(response.getBody().getTitle()).isEqualTo(newExercise.getTitle());
-        assertThat(response.getBody().getDescription()).isEqualTo(newExercise.getDescription());
-        assertThat(response.getBody().getPoints()).isEqualTo(newExercise.getPoints());
-        assertThat(response.getBody().getSolution()).isEqualTo(newExercise.getSolution());
-        assertThat(response.getBody().getCategory()).isEqualTo(newExercise.getCategory());
-        assertThat(response.getBody().getDifficulty()).isEqualTo(newExercise.getDifficulty());
+        assertThat(getExerciseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNotNull(getExerciseEntity.getBody());
+        assertThat(getExerciseEntity.getBody().getAuthor().getUsername()).isEqualTo("Tom Testermann");
+        assertThat(getExerciseEntity.getBody().getTitle()).isEqualTo(newExercise.getTitle());
+        assertThat(getExerciseEntity.getBody().getDescription()).isEqualTo(newExercise.getDescription());
+        assertThat(getExerciseEntity.getBody().getPoints()).isEqualTo(newExercise.getPoints());
+        assertThat(getExerciseEntity.getBody().getSolution()).isEqualTo(newExercise.getSolution());
+        assertThat(getExerciseEntity.getBody().getCategory()).isEqualTo(newExercise.getCategory());
+        assertThat(getExerciseEntity.getBody().getDifficulty()).isEqualTo(newExercise.getDifficulty());
     }
 
     @Test
     @DirtiesContext
-    void getExercise_WhenExerciseDoesNotExist_ShouldReturnExercise() {
-        ResponseEntity<Exercise> response = restTemplate.getForEntity("/api/exercise/" + -1, Exercise.class);
+    void getExercise_WhenExerciseDoesNotExist_ShouldReturnExercise() throws URISyntaxException {
+        HttpHeaders cookieHeader = signUpLoginAndReturnCookie();
+        ResponseEntity<Exercise> getExerciseEntity = getExerciseWithLocation(new URI("/api/exercise/-1"), cookieHeader);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(getExerciseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     private Exercise buildTestExercise() {
-        TalentsUser user = talentsUserRepository.save(
-                TalentsUser.builder()
-                        .username("Tom Testermann")
-                        .points(5)
-                        .exercises(new ArrayList<>())
-                        .build()
-        );
-
         return Exercise.builder()
                 .id(1L)
-                .author(user)
                 .title("Test")
                 .description("This is a test description")
                 .points(5)
@@ -139,5 +154,31 @@ class ExerciseControllerTest {
                 .difficulty("easy")
                 .language("Java")
                 .build();
+    }
+
+    private HttpHeaders signUpLoginAndReturnCookie() {
+        restTemplate.postForEntity("/api/auth/signup", new SignupRequest("Tom Testermann", "test"), Void.class);
+        ResponseEntity<?> responsetest = restTemplate
+                .postForEntity("/api/auth/signin", new LoginRequest("Tom Testermann", "test"), Void.class);
+
+        String cookie = responsetest.getHeaders().getFirst("Set-Cookie");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", cookie );
+        return headers;
+    }
+
+    private ResponseEntity<Void> createExerciseWithHeader(HttpHeaders headers, Exercise newExercise) {
+        return restTemplate.exchange("/api/exercise",
+                POST,
+                new HttpEntity<>(newExercise, headers),
+                Void.class);
+    }
+
+    private ResponseEntity<Exercise> getExerciseWithLocation(URI location, HttpHeaders headers) {
+        return restTemplate.exchange(location,
+                GET,
+                new HttpEntity<>(headers),
+                Exercise.class);
     }
 }

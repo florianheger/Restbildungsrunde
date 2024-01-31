@@ -11,7 +11,9 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
-@Table
+@Table(name = "talents_user", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -22,8 +24,15 @@ public class TalentsUser {
 
     String username;
 
+    String password;
+
     int points;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Exercise> exercises;
+
+    public TalentsUser(String username, String encode) {
+        this.username = username;
+        this.password = encode;
+    }
 }

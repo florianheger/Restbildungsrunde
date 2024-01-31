@@ -3,12 +3,16 @@ package com.ausbildungsrunde.restbildungsrunde.controller;
 import com.ausbildungsrunde.restbildungsrunde.model.Exercise;
 import com.ausbildungsrunde.restbildungsrunde.repository.ExerciseRepository;
 import com.ausbildungsrunde.restbildungsrunde.repository.TalentsUserRepository;
+import com.ausbildungsrunde.restbildungsrunde.security.service.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -19,9 +23,10 @@ public class ExerciseController {
     private final ExerciseRepository exerciseRepository;
     private final TalentsUserRepository talentsUserRepository;
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<Void> createExercise(@RequestBody Exercise exercise, @PathVariable int userId, UriComponentsBuilder ucb) {
-        talentsUserRepository.findById(userId).ifPresent(exercise::setAuthor);
+    @PostMapping("")
+    public ResponseEntity<Void> createExercise(@RequestBody Exercise exercise, UriComponentsBuilder ucb) {
+        Long userId = getID();
+        talentsUserRepository.findById(userId.intValue()).ifPresent(exercise::setAuthor);
         Exercise newExercise = exerciseRepository.save(exercise);
         URI locationOfExercise = ucb.path("api/exercise/{id}").buildAndExpand(newExercise.getId()).toUri();
         return ResponseEntity.created(locationOfExercise).build();
@@ -39,23 +44,27 @@ public class ExerciseController {
         return ResponseEntity.ok().build();
     }
 
-    //TODO: Jetzt müsste man noch den Author mitgeben. Das macht eigentlich keinen Sinn.
     @PutMapping("/{id}")
     public ResponseEntity<URI> updateExercise(@RequestBody Exercise exercise, @PathVariable long id) {
         Optional<Exercise> exerciseOptional = exerciseRepository.findById((int)id);
-        if (exerciseOptional.isPresent()) {
-            Exercise exerciseToUpdate = exerciseOptional.get();
-            exerciseToUpdate.setAuthor(exercise.getAuthor());
-            exerciseToUpdate.setTitle(exercise.getTitle());
-            exerciseToUpdate.setDescription(exercise.getDescription());
-            exerciseToUpdate.setPoints(exercise.getPoints());
-            exerciseToUpdate.setSolution(exercise.getSolution());
-            exerciseToUpdate.setCategory(exercise.getCategory());
-            exerciseToUpdate.setDifficulty(exercise.getDifficulty());
-            exerciseRepository.save(exerciseToUpdate);
-            URI locationOfExercise = URI.create("/api/exercise/" + exerciseToUpdate.getId());
+        Long userId = getID();
+
+        if (exerciseOptional.isPresent() && Objects.equals(exerciseOptional.get().getAuthor().getId(), userId)) {
+            exercise.setId(id);
+            exerciseRepository.save(exercise);
+            URI locationOfExercise = URI.create("/api/exercise/" + exercise.getId());
             return ResponseEntity.ok(locationOfExercise);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    public static Long getID() {
+        Long id = null;
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            id = authentication.getPrincipal() instanceof UserDetailsImpl ?
+                    ((UserDetailsImpl) authentication.getPrincipal()).getId() : null;
+        }
+        return id;
     }
 }
