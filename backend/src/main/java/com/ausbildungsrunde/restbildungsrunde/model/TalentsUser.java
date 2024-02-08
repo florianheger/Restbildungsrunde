@@ -31,6 +31,10 @@ public class TalentsUser {
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Exercise> exercises;
 
+    public void addPoints(int points) {
+        this.points += points;
+    }
+
     public TalentsUser(String username, String encode) {
         this.username = username;
         this.password = encode;
