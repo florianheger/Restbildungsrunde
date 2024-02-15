@@ -55,6 +55,7 @@ public class ExerciseController {
 
         if (exerciseOptional.isPresent() && Objects.equals(exerciseOptional.get().getAuthor().getId(), userId)) {
             exercise.setId(id);
+            exercise.setAuthor(exerciseOptional.get().getAuthor());
             exerciseRepository.save(exercise);
             URI locationOfExercise = URI.create("/api/exercise/" + exercise.getId());
             return ResponseEntity.ok(locationOfExercise);

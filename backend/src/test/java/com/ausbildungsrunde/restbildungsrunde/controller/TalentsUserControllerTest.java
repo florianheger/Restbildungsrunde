@@ -12,7 +12,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -35,12 +34,11 @@ class TalentsUserControllerTest {
 
 
     @Test
-    @DirtiesContext
     public void createUser_ShouldCreateUser() {
         ResponseEntity<?> responseSignUp = restTemplate.postForEntity("/api/user/signup",
-                new SignupRequest("Tom Testermann", "test"), Void.class);
+                new SignupRequest("Create User", "test"), Void.class);
         ResponseEntity<?> responseSignIn = restTemplate.postForEntity("/api/user/signin",
-                new LoginRequest("Tom Testermann", "test"), Void.class);
+                new LoginRequest("Create User", "test"), Void.class);
         String cookie = responseSignIn.getHeaders().getFirst("Set-Cookie");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", cookie );
@@ -53,17 +51,16 @@ class TalentsUserControllerTest {
         assertThat(responseSignUp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(newUserEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(newUserEntity.getBody());
-        assertThat(newUserEntity.getBody().getUsername()).isEqualTo("Tom Testermann");
+        assertThat(newUserEntity.getBody().getUsername()).isEqualTo("Create User");
         assertThat(newUserEntity.getBody().getPoints()).isEqualTo(0);
     }
 
     @Test
-    @DirtiesContext
     public void deleteUser_ShouldDeleteUser() {
         ResponseEntity<?> responseSignUp = restTemplate.postForEntity("/api/user/signup",
-                new SignupRequest("Tom Testermann", "test"), Void.class);
+                new SignupRequest("Delete User", "test"), Void.class);
         ResponseEntity<?> responseSignIn = restTemplate.postForEntity("/api/user/signin",
-                new LoginRequest("Tom Testermann", "test"), Void.class);
+                new LoginRequest("Delete User", "test"), Void.class);
 
         String cookie = responseSignIn.getHeaders().getFirst("Set-Cookie");
         HttpHeaders headers = new HttpHeaders();
@@ -86,12 +83,11 @@ class TalentsUserControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void updateUser_ShouldUpdatePoints() {
         ResponseEntity<?> responseSignUp = restTemplate.postForEntity("/api/user/signup",
-                new SignupRequest("Tom Testermann", "test"), Void.class);
+                new SignupRequest("Update User", "test"), Void.class);
         ResponseEntity<?> responseSignIn = restTemplate.postForEntity("/api/user/signin",
-                new LoginRequest("Tom Testermann", "test"), Void.class);
+                new LoginRequest("Update User", "test"), Void.class);
         String cookie = responseSignIn.getHeaders().getFirst("Set-Cookie");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", cookie );
@@ -103,7 +99,7 @@ class TalentsUserControllerTest {
 
 
         int expectedPoints = 10;
-        TalentsUser userUpdate = new TalentsUser(id, "Tom", "NeuesPw", expectedPoints, new ArrayList<>());
+        TalentsUser userUpdate = new TalentsUser(id, "Updated User", "NeuesPw", expectedPoints, new ArrayList<>());
 
         restTemplate.exchange("/api/user/" + id,
                 PUT,
@@ -114,11 +110,11 @@ class TalentsUserControllerTest {
         Optional<TalentsUser> newUserInDb = talentsUserRepository.findById(id.intValue());
 
         assertTrue(newUserInDb.isPresent());
-        assertThat(newUserInDb.get().getUsername()).isEqualTo("Tom");
+        assertThat(newUserInDb.get().getUsername()).isEqualTo("Updated User");
         assertThat(newUserInDb.get().getPoints()).isEqualTo(expectedPoints);
 
         ResponseEntity<?> responsetestSignIn = restTemplate.postForEntity("/api/user/signin",
-                new LoginRequest("Tom", "NeuesPw"), Void.class);
+                new LoginRequest("Updated User", "NeuesPw"), Void.class);
         String cookieSignIn = responsetestSignIn.getHeaders().getFirst("Set-Cookie");
         HttpHeaders headersSignIn = new HttpHeaders();
         headersSignIn.add("Cookie", cookieSignIn );
@@ -132,12 +128,11 @@ class TalentsUserControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void getUser_WhenUserExists_ShouldReturnUser() {
         ResponseEntity<?> responseSignUp = restTemplate.postForEntity("/api/user/signup",
-                new SignupRequest("Tom Testermann", "test"), Void.class);
+                new SignupRequest("Exisitng User", "test"), Void.class);
         ResponseEntity<?> responseSignIn = restTemplate.postForEntity("/api/user/signin",
-                new LoginRequest("Tom Testermann", "test"), Void.class);
+                new LoginRequest("Exisitng User", "test"), Void.class);
         String cookie = responseSignIn.getHeaders().getFirst("Set-Cookie");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", cookie );
@@ -149,55 +144,25 @@ class TalentsUserControllerTest {
 
         assertThat(exisitingUser.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(exisitingUser.getBody());
-        assertThat(exisitingUser.getBody().getUsername()).isEqualTo("Tom Testermann");
+        assertThat(exisitingUser.getBody().getUsername()).isEqualTo("Exisitng User");
         assertThat(exisitingUser.getBody().getPoints()).isEqualTo(0);
     }
 
     @Test
-    @DirtiesContext
     public void getUser_WhenUserDoesNotExist_ShouldReturnNoUser() {
         restTemplate.postForEntity("/api/user/signup",
-                new SignupRequest("Tom Testermann", "test"), Void.class);
+                new SignupRequest("No User", "test"), Void.class);
         ResponseEntity<?> responseSignIn = restTemplate.postForEntity("/api/user/signin",
-                new LoginRequest("Tom Testermann", "test"), Void.class);
+                new LoginRequest("No User", "test"), Void.class);
         String cookie = responseSignIn.getHeaders().getFirst("Set-Cookie");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", cookie );
 
-        ResponseEntity<TalentsUser> notExisitingUser = restTemplate.exchange("/api/user/-1",
+        ResponseEntity<TalentsUser> notExisitingUser = restTemplate.exchange("/api/user/-2",
                 GET,
                 new HttpEntity<>(null, headers),
                 TalentsUser.class);
 
         assertThat(notExisitingUser.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-
-    /*@Test
-    public void getAllUsers_shouldReturnASortedPageOfUsersWithNoParametersAnsUseDefaultValues() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/api/user", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        DocumentContext docContext = JsonPath.parse(response.getBody());
-        int userCount = docContext.read("$.length()");
-        assertThat(userCount).isEqualTo(3);
-
-        JSONArray ids = docContext.read("$..id");
-        assertThat(ids).containsExactlyInAnyOrder(-100, -200, -300);
-
-        JSONArray usernames = docContext.read("$..username");
-        assertThat(usernames).containsExactlyInAnyOrder("TestUser1", "TestUser2", "TestUser3");
-
-        JSONArray points = docContext.read("$..points");
-        assertThat(points).containsExactly(70, 20, 10);
-    }
-
-    @Test
-    public void getAllUsers_shouldReturnSpecificPageOfUser() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/api/user?page=0&size=1", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        DocumentContext docContext = JsonPath.parse(response.getBody());
-        JSONArray page = docContext.read("$[*]");
-        assertThat(page.size()).isEqualTo(1);
-    }*/
 }

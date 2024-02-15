@@ -62,11 +62,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/user/signup").permitAll()
                                 .requestMatchers("/api/user/signin").permitAll()
+                                .requestMatchers("/swagger").permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/openapi").permitAll()
                                 .requestMatchers("/api/test/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 
-        // fix H2 database console: Refused to display ' in a frame because it set 'X-Frame-Options' to 'deny'
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         http.authenticationProvider(authenticationProvider());
