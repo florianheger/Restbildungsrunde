@@ -32,7 +32,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class TalentsUserController {
     private final AuthenticationManager authenticationManager;
     private final TalentsUserRepository talentsUserRepository;
