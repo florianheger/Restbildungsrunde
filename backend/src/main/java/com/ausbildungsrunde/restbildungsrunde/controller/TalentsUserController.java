@@ -47,9 +47,7 @@ public class TalentsUserController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse(userDetails.getId(),
-                        userDetails.getUsername()));
+        return ResponseEntity.ok().body(new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), jwtCookie.getValue()));
     }
 
     @PostMapping("/signup")

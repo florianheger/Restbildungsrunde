@@ -17,7 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/exercise")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class ExerciseController {
     private final ExerciseRepository exerciseRepository;
     private final TalentsUserRepository talentsUserRepository;
