@@ -67,7 +67,7 @@ public class TalentsUserController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-        return ResponseEntity.created(locationOfUser).header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).build();
+        return ResponseEntity.created(locationOfUser).body(new UserInfoResponse(userDetails.getId(), user.getUsername(), jwtCookie.getValue()));
     }
 
     @PostMapping("/signout")

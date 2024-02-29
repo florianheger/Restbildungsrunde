@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router';
 
-const LoginForm = () => {
+const RegisterForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -18,7 +18,7 @@ const LoginForm = () => {
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        const response = await fetch('http://localhost:8080/api/user/signin', {
+        const response = await fetch('http://localhost:8080/api/user/signup', {
             method: 'POST',
             headers: {
                 'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -31,12 +31,12 @@ const LoginForm = () => {
 
         console.log(response);
         document.cookie = `Token=${(await response.json()).jwt}`;
-        if (response.ok) {
+        if (response.status == 201) {
             navigate("/exercises");
-            console.log('Login successful!');
+            console.log('Register successful!');
         } else {
-            // Handle failed login
-            console.error('Login failed!');
+            // Handle failed Register
+            console.error('Register failed!');
         }
     };
 
@@ -60,9 +60,9 @@ const LoginForm = () => {
                     onChange={handlePasswordChange}
                 />
             </div>
-            <button type="submit" id="submit">Login</button>
+            <button type="submit" id="submit">Register</button>
         </form>
     );
 };
 
-export default LoginForm;
+export default RegisterForm;

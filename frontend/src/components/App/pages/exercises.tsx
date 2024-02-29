@@ -93,7 +93,7 @@ const Exercises = () => {
                        onChange={(e) => setPointsName(parseInt(e.target.value))}/>
             </div>
             <div>
-                <button type="submit" className="submit-btn">
+                <button type="submit" className="submit-btn" id="submit">
                     einreichen
                 </button>
             </div>
